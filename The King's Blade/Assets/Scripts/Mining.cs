@@ -9,6 +9,8 @@ public class Mining : MonoBehaviour
     public float mineCountdown;
     private float currentTime = 0;
 
+    public delegate void onMineAction(); 
+    public static event onMineAction mineSteel;
 
     // Define the states using an enum
     public enum MineState
@@ -39,6 +41,9 @@ public class Mining : MonoBehaviour
             }
             else if (Input.GetKey(KeyCode.Space) & currentTime < 0f){
                 Debug.Log("Mining");
+                if (mineSteel != null){
+                    mineSteel?.Invoke(); 
+                }
                 currentTime = mineCountdown;
             }
                 break;
