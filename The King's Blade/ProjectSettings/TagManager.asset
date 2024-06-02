@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Mine
   - Storage
+  - Steel
   layers:
   - Default
   - TransparentFX

@@ -221,6 +221,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Steel: {fileID: 1757335224324329685, guid: bfea93c07b4743142860a4a3d517113f, type: 3}
+  orcishSteel: {fileID: 1757335224324329685, guid: 083f0394f10c10e4b874c276a2c46f8d, type: 3}
+  dwarvenSteel: {fileID: 1757335224324329685, guid: a0595a5721cd0764a99e387a008c8f99, type: 3}
+  elvishSteel: {fileID: 1757335224324329685, guid: d3ae91ff46c658b478c72ef89d42673e, type: 3}
+  steelDistance: 1
+  steelMax: 100
+  whatSteel: 4
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,6 +324,7 @@ GameObject:
   - component: {fileID: 619975974}
   - component: {fileID: 619975973}
   - component: {fileID: 619975975}
+  - component: {fileID: 619975976}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -443,6 +450,22 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: 0}
   m_Size: {x: 1.0000001, y: 2.0000002}
   m_Direction: 0
+--- !u!114 &619975976
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619975970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2cfb0b1f7cb17e4abdfc451bae99c38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupRadius: 1
+  itemLayer:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &1121373426
 GameObject:
   m_ObjectHideFlags: 0
