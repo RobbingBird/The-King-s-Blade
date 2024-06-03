@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Pickup : MonoBehaviour
+public class PickupDrop : MonoBehaviour
 {
     public float pickupRadius = 1f;
+    public float forgeCheckRadius = 2f; // Radius to check for the Forge
 
     public delegate void onPickupAction();
     public static event onPickupAction onPickup;
@@ -13,6 +14,7 @@ public class Pickup : MonoBehaviour
     private bool inventoryCheck = true;
 
     public LayerMask itemLayer;
+    public LayerMask forgeLayer;
     
     void Update()
     {
@@ -40,12 +42,28 @@ public class Pickup : MonoBehaviour
         }
     }
     
-    // Destroy children if inventory is full
-    if (inventoryFull && inventoryCheck)
-    {
-        foreach (Transform child in transform)
+    Collider2D[] colliders2 = Physics2D.OverlapCircleAll(transform.position, forgeCheckRadius, forgeLayer);
+        foreach (Collider2D collider in colliders2)
         {
-            Destroy(child.gameObject);
+            if (collider.CompareTag("Forge") && inventoryFull && inventoryCheck) 
+            {
+                Debug.Log("Near Forge: Destroying inventory items");
+                foreach (Transform child in transform)
+                {
+                    Destroy(child.gameObject);
+                }
+                inventoryFull = false;
+                break;
+            }
+        }
+
+    Collider2D[] colliders3 = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
+    foreach (Collider2D collider in colliders3)
+    {
+        if (collider.CompareTag("Storage") && inventoryFull && inventoryCheck)
+        {
+            transform.GetChild(0).SetParent(collider.transform);
+            collider.transform.GetChild(0).position = collider.transform.position;
             inventoryFull = false;
         }
     }
@@ -57,5 +75,7 @@ public class Pickup : MonoBehaviour
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, pickupRadius);
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, forgeCheckRadius);
     }
 }

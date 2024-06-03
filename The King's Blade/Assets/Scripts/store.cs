@@ -23,13 +23,13 @@ public class Store : MonoBehaviour
     private void OnEnable()
     {
         Mining.mineSteel += SpawnSteel; 
-        Pickup.onPickup += RemoveSteel;
+        PickupDrop.onPickup += RemoveSteel;
     }
 
     private void OnDisable()
     {
         Mining.mineSteel -= SpawnSteel;
-        Pickup.onPickup -= RemoveSteel;
+        PickupDrop.onPickup -= RemoveSteel;
     }
 
     private void Start()
@@ -62,6 +62,8 @@ public class Store : MonoBehaviour
         }
 
         steelAmount++;
+
+        steelInstance.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
 
         Collider2D[] colliders;
         bool foundSteel = false;
