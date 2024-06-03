@@ -9,6 +9,9 @@ public class Pickup : MonoBehaviour
     public delegate void onPickupAction();
     public static event onPickupAction onPickup;
 
+    private bool inventoryFull = false;
+    private bool inventoryCheck = true;
+
     public LayerMask itemLayer;
     
     void Update()
@@ -20,19 +23,35 @@ public class Pickup : MonoBehaviour
     }
 
     void PickupItem()
+{
+    //Pickup
+    Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
+    foreach (Collider2D collider in colliders)
     {
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
-        foreach (Collider2D collider in colliders)
+        if (collider.CompareTag("Steel") && !inventoryFull)
         {
-            if (collider.CompareTag("Steel"))
-            {
-                Debug.Log("Picked up: " + collider.gameObject.name);
-                Destroy(collider.gameObject);
-                onPickup?.Invoke(); 
-                break;
-            }
+            Debug.Log("Picked up: " + collider.gameObject.name);
+            collider.transform.SetParent(transform);
+            collider.GetComponent<PolygonCollider2D>().enabled = false; 
+            inventoryFull = true;
+            inventoryCheck = false; 
+            onPickup?.Invoke(); 
+            break;
         }
     }
+    
+    // Destroy children if inventory is full
+    if (inventoryFull && inventoryCheck)
+    {
+        foreach (Transform child in transform)
+        {
+            Destroy(child.gameObject);
+            inventoryFull = false;
+        }
+    }
+
+    inventoryCheck = true;
+}
 
     private void OnDrawGizmosSelected()
     {
