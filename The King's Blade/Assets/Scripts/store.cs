@@ -65,7 +65,7 @@ public class Store : MonoBehaviour
 
         steelAmount++;
 
-        steelInstance.transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+        steelInstance.transform.localScale = new Vector3(0.03f, 0.03f, 0.03f);
 
         Collider2D[] colliders;
         bool foundSteel = false;

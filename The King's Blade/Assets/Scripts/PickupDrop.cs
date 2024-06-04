@@ -34,10 +34,11 @@ public class PickupDrop : MonoBehaviour
     {
         if (collider.CompareTag("Steel") && !inventoryFull)
         {
-            Debug.Log("Picked up: " + collider.gameObject.name);
-            collider.transform.SetParent(transform);
+            Debug.Log("Picked up: " + collider.gameObject.name); 
+            collider.transform.SetParent(transform); 
+            collider.transform.position = transform.position + new Vector3(0, 1, 0);
             collider.GetComponent<PolygonCollider2D>().enabled = false; 
-            inventoryFull = true;
+            inventoryFull = true; 
             inventoryCheck = false; 
             onPickup?.Invoke(); 
             break;
