@@ -24,12 +24,14 @@ public class Store : MonoBehaviour
     {
         Mining.mineSteel += SpawnSteel; 
         PickupDrop.onPickup += RemoveSteel;
+        PickupDrop.onPlace += addSteel;
     }
 
     private void OnDisable()
     {
         Mining.mineSteel -= SpawnSteel;
         PickupDrop.onPickup -= RemoveSteel;
+        PickupDrop.onPlace -= addSteel;
     }
 
     private void Start()
@@ -87,5 +89,9 @@ public class Store : MonoBehaviour
     private void RemoveSteel()
     {
         steelAmount--;
+    }
+
+    private void addSteel(){
+        steelAmount ++;
     }
 }

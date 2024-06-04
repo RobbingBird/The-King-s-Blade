@@ -5,10 +5,12 @@ using UnityEngine;
 public class PickupDrop : MonoBehaviour
 {
     public float pickupRadius = 1f;
-    public float forgeCheckRadius = 2f; // Radius to check for the Forge
+    public float forgeCheckRadius = 1.3f; // Radius to check for the Forge
 
     public delegate void onPickupAction();
+    public delegate void onPlaceAction();
     public static event onPickupAction onPickup;
+    public static event onPlaceAction onPlace;
 
     private bool inventoryFull = false;
     private bool inventoryCheck = true;
@@ -27,8 +29,8 @@ public class PickupDrop : MonoBehaviour
     void PickupItem()
 {
     //Pickup
-    Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
-    foreach (Collider2D collider in colliders)
+    Collider2D[] colliders1 = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
+    foreach (Collider2D collider in colliders1)
     {
         if (collider.CompareTag("Steel") && !inventoryFull)
         {
@@ -42,6 +44,7 @@ public class PickupDrop : MonoBehaviour
         }
     }
     
+
     Collider2D[] colliders2 = Physics2D.OverlapCircleAll(transform.position, forgeCheckRadius, forgeLayer);
         foreach (Collider2D collider in colliders2)
         {
@@ -58,15 +61,33 @@ public class PickupDrop : MonoBehaviour
         }
 
     Collider2D[] colliders3 = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
-    foreach (Collider2D collider in colliders3)
+foreach (Collider2D collider in colliders3)
+{
+    if (collider.CompareTag("Storage") && inventoryFull && inventoryCheck)
     {
-        if (collider.CompareTag("Storage") && inventoryFull && inventoryCheck)
+        bool steelAtPosition = false;
+        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(collider.transform.position, 0.1f, itemLayer);
+        foreach (Collider2D nearbyCollider in nearbyColliders)
         {
-            transform.GetChild(0).SetParent(collider.transform);
-            collider.transform.GetChild(0).position = collider.transform.position;
+            if (nearbyCollider.CompareTag("Steel") && nearbyCollider.transform.position == collider.transform.position)
+            {
+                steelAtPosition = true;
+                break;
+            }
+        }
+
+        if (!steelAtPosition)
+        {
+            Transform child = transform.GetChild(0);
+            child.SetParent(collider.transform);
+            child.position = collider.transform.position;
+            child.GetComponent<PolygonCollider2D>().enabled = true;
+            onPlace?.Invoke();
             inventoryFull = false;
+            break;
         }
     }
+}
 
     inventoryCheck = true;
 }
