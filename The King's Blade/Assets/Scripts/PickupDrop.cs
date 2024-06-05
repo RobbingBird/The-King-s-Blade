@@ -9,8 +9,11 @@ public class PickupDrop : MonoBehaviour
 
     public delegate void onPickupAction();
     public delegate void onPlaceAction();
+    public delegate void onForgeAction(GameObject Steel);
     public static event onPickupAction onPickup;
     public static event onPlaceAction onPlace;
+    public static event onForgeAction onForge;
+
 
     private bool inventoryFull = false;
     private bool inventoryCheck = true;
@@ -44,8 +47,8 @@ public class PickupDrop : MonoBehaviour
             break;
         }
     }
-    
 
+    //Forge
     Collider2D[] colliders2 = Physics2D.OverlapCircleAll(transform.position, forgeCheckRadius, forgeLayer);
         foreach (Collider2D collider in colliders2)
         {
@@ -54,6 +57,7 @@ public class PickupDrop : MonoBehaviour
                 Debug.Log("Near Forge: Destroying inventory items");
                 foreach (Transform child in transform)
                 {
+                    onForge?.Invoke(child.gameObject);
                     Destroy(child.gameObject);
                 }
                 inventoryFull = false;
@@ -61,6 +65,7 @@ public class PickupDrop : MonoBehaviour
             }
         }
 
+    //Place back in storage
     Collider2D[] colliders3 = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
 foreach (Collider2D collider in colliders3)
 {
