@@ -5,10 +5,14 @@ public class Forge2 : MonoBehaviour
     public GameObject Card; 
     public GameObject steel; 
     public int steelAmount = 5; 
-    //private bool hasOrcish = false; 
-    //private bool hasDwarven = false; 
-    //private bool hasElvish = false; 
+    private bool hasOrcish = false; 
+    private bool hasDwarven = false; 
+    private bool hasElvish = false; 
     private int whatCard = 1; 
+
+    public delegate void onPointAction(int point);
+    public static event onPointAction onPoint;
+
 
     void OnEnable(){
         PickupDrop.onForge += addSteel;
@@ -37,15 +41,25 @@ public class Forge2 : MonoBehaviour
             Card.transform.GetChild(steelAmount).gameObject.SetActive(true);
             steelAmount += 1; 
 
-            if (Steel.name == "orcishSteel(Clone)"){
+            if (Steel.name == "orcishSteel(Clone)" && hasOrcish == false){
                 Card.transform.GetChild(3).gameObject.SetActive(true);
-            } else if (Steel.name == "dwarvenSteel(Clone)"){
+                onPoint?.Invoke(1);
+                hasOrcish = true;
+            } else if (Steel.name == "dwarvenSteel(Clone)" && hasDwarven == false){
                 Card.transform.GetChild(4).gameObject.SetActive(true);
-            } else if (Steel.name == "elvishSteel(Clone)"){
+                onPoint?.Invoke(2);
+                hasDwarven = true;
+            } else if (Steel.name == "elvishSteel(Clone)" && hasElvish == false){
                 Card.transform.GetChild(5).gameObject.SetActive(true);
+                onPoint?.Invoke(3);
+                hasElvish = true;
             }
-        } else if (steelAmount >= 11 && whatCard == 1){
+
+            if (steelAmount >= 11 && whatCard == 1){
             whatCard += 1;
+            onPoint?.Invoke(3);
+            Card.transform.position = new Vector2(100, 100);
+            }
         }
     }
 }
