@@ -10,8 +10,10 @@ public class Forge2 : MonoBehaviour
     private bool hasElvish = false; 
     private int whatCard = 1; 
 
-    public delegate void onPointAction(int point);
-    public static event onPointAction onPoint;
+    private int worth = 0; 
+
+    public delegate void onCompleteAction(int points);
+    public static event onCompleteAction onComplete;
 
 
     void OnEnable(){
@@ -43,22 +45,24 @@ public class Forge2 : MonoBehaviour
 
             if (Steel.name == "orcishSteel(Clone)" && hasOrcish == false){
                 Card.transform.GetChild(3).gameObject.SetActive(true);
-                onPoint?.Invoke(1);
                 hasOrcish = true;
+                worth += 1;
             } else if (Steel.name == "dwarvenSteel(Clone)" && hasDwarven == false){
                 Card.transform.GetChild(4).gameObject.SetActive(true);
-                onPoint?.Invoke(2);
                 hasDwarven = true;
+                worth += 2;
             } else if (Steel.name == "elvishSteel(Clone)" && hasElvish == false){
                 Card.transform.GetChild(5).gameObject.SetActive(true);
-                onPoint?.Invoke(3);
                 hasElvish = true;
+                worth += 3;
             }
 
             if (steelAmount >= 11 && whatCard == 1){
             whatCard += 1;
-            onPoint?.Invoke(3);
+            worth += 3;
+            onComplete?.Invoke(worth);
             Card.transform.position = new Vector2(100, 100);
+            worth = 0;
             }
         }
     }

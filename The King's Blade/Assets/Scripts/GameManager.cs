@@ -8,14 +8,14 @@ public class GameManager : MonoBehaviour
     public int winPoints = 6;
 
     void OnEnable(){
-        Forge2.onPoint += managePoint;
+        Forge2.onComplete += manageComplete;
     }
 
     void OnDisable(){
-        Forge2.onPoint -= managePoint;
+        Forge2.onComplete -= manageComplete;
     }
 
-    void managePoint(int point){
+    void manageComplete(int point){
         points += point;
 
         if (points >= winPoints){
