@@ -5,6 +5,7 @@ using UnityEngine;
 public class PickupDrop : MonoBehaviour
 {
     public float pickupRadius = 1f;
+    public float trashTime = 10f; // Timer delay in seconds
 
     public delegate void onPickupAction();
     public delegate void onPlaceAction();
@@ -16,17 +17,20 @@ public class PickupDrop : MonoBehaviour
     private bool inventoryFull = false;
     private bool inventoryCheck = true;
     private bool nearForge = false; // Tracks if the player is near the forge
+    private bool canTrash = true;
 
     public LayerMask itemLayer;
 
     void OnEnable()
     {
         Forge.keep += keep2;
+        Forge.onComplete += trashSpeedChange;
     }
 
     void OnDisable()
     {
         Forge.keep -= keep2;
+        Forge.onComplete += trashSpeedChange;
     }
 
     void Update()
@@ -52,6 +56,15 @@ public class PickupDrop : MonoBehaviour
                 inventoryCheck = false;
                 onPickup?.Invoke();
                 break;
+            }
+
+            if (collider.CompareTag("Trash") && inventoryFull && inventoryCheck && canTrash)
+            {
+                inventoryCheck = false; 
+                Destroy(transform.GetChild(0).gameObject);
+                inventoryFull = false; 
+                Debug.Log("Can't destroy steel");
+                StartCoroutine(ResetInventoryCheckAfterDelay());
             }
         }
 
@@ -120,9 +133,20 @@ public class PickupDrop : MonoBehaviour
         inventoryFull = true;
     }
 
+    void trashSpeedChange(int points, int trash){
+        trashTime -= trash;
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, pickupRadius);
+    }
+
+    IEnumerator ResetInventoryCheckAfterDelay()
+    {
+        canTrash = false;
+        yield return new WaitForSeconds(trashTime);
+        canTrash = true;
     }
 }

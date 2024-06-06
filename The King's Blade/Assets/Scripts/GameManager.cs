@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
         Forge.onComplete -= manageComplete;
     }
 
-    void manageComplete(int point){
+    void manageComplete(int point, int trash){
         points += point;
 
         if (points >= winPoints){

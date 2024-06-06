@@ -12,13 +12,14 @@ public class Forge : MonoBehaviour
     private int whatCard = 1; 
 
     public int worth = 0; 
-    
+    public int increaseForgeSpeed = 0; 
+    public int increaseTrashSpeed = 0; 
 
-    public float forgeTime = 10f;
+    public static float forgeTime = 20f; 
 
-    public GameObject player;
+    public GameObject player; 
 
-    public delegate void onCompleteAction(int points);
+    public delegate void onCompleteAction(int points, int trash);
     public delegate void onKeepAction();
     public static event onCompleteAction onComplete;
     public static event onKeepAction keep;
@@ -70,7 +71,7 @@ public class Forge : MonoBehaviour
                 }
 
                 if (this.name == "Forge (1)"){
-
+                    increaseTrashSpeed += 5;
                 }
             }
             else if (Steel.name == "dwarvenSteel(Clone)" && !hasDwarven)
@@ -83,7 +84,7 @@ public class Forge : MonoBehaviour
                 }
 
                 if (this.name == "Forge (1)"){
-
+                    increaseForgeSpeed += 2;
                 }
             }
             else if (Steel.name == "elvishSteel(Clone)" && !hasElvish)
@@ -96,20 +97,27 @@ public class Forge : MonoBehaviour
                 }
 
                 if (this.name == "Forge (1)"){
-
+                    increaseForgeSpeed += 5; 
                 }
             }
 
             if (steelAmount >= 11 && whatCard == 1)
             {
                 whatCard += 1;
+
                 if (this.name == "Forge (2)"){
                     worth += 3;
                 }
 
-                onComplete?.Invoke(worth);
+                if (this.name == "Forge (1)"){
+                    worth += 2;
+                }
+
+                forgeTime -= increaseForgeSpeed;
+                onComplete?.Invoke(worth, increaseTrashSpeed);
                 Card.transform.position = new Vector2(100, 100);
                 worth = 0;
+                Debug.Log(forgeTime);	
             }
 
             StartCoroutine(SteelAdditionCooldown());
