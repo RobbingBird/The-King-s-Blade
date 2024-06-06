@@ -1282,6 +1282,7 @@ MonoBehaviour:
   Card: {fileID: 1364910604}
   steel: {fileID: 0}
   steelAmount: 6
+  player: {fileID: 619975970}
 --- !u!1 &619975970
 GameObject:
   m_ObjectHideFlags: 0
@@ -1344,7 +1345,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 9
   m_Sprite: {fileID: 4723107735738678597, guid: f374107ba66790641b6b7c9d0d9a49d3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

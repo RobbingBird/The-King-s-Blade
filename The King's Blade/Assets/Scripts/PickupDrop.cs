@@ -21,6 +21,13 @@ public class PickupDrop : MonoBehaviour
     public LayerMask itemLayer;
     public LayerMask forgeLayer;
     
+    void OnEnable(){
+        Forge2.keep += keep2;
+    }
+
+    void OnDisable(){
+        Forge2.keep -= keep2;
+    }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -57,10 +64,9 @@ public class PickupDrop : MonoBehaviour
                 Debug.Log("Near Forge: Destroying inventory items");
                 foreach (Transform child in transform)
                 {
+                    inventoryFull = false;
                     onForge?.Invoke(child.gameObject);
-                    Destroy(child.gameObject);
                 }
-                inventoryFull = false;
                 break;
             }
         }
@@ -104,5 +110,9 @@ foreach (Collider2D collider in colliders3)
         Gizmos.DrawWireSphere(transform.position, pickupRadius);
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, forgeCheckRadius);
+    }
+
+    void keep2(){
+        inventoryFull = true;
     }
 }
