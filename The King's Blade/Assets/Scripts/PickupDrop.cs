@@ -61,10 +61,10 @@ public class PickupDrop : MonoBehaviour
             if (collider.CompareTag("Trash") && inventoryFull && inventoryCheck && canTrash)
             {
                 inventoryCheck = false; 
-                Destroy(transform.GetChild(0).gameObject);
+                Destroy(transform.GetChild(0).gameObject); 
                 inventoryFull = false; 
-                Debug.Log("Can't destroy steel");
-                StartCoroutine(ResetInventoryCheckAfterDelay());
+                Debug.Log("Can't destroy steel"); 
+                StartCoroutine(ResetInventoryCheckAfterDelay()); 
             }
         }
 

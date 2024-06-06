@@ -5,73 +5,31 @@ using UnityEngine;
 
 public class Mining : MonoBehaviour
 {
-    //variables
-    public float mineCountdown;
-    private float currentTime = 0;
-
     public delegate void onMineAction(); 
     public static event onMineAction mineSteel;
 
-    // Define the states using an enum
-    public enum MineState
-    {
-        None,
-        Mining
+    private bool mine = false;
+    
+    public int mineAmount = 0;
+    public int mineMax = 20;
+
+    public void OnTriggerEnter2D(){
+        mine = true;
     }
 
-    // Start with the initial state as None
-    private MineState currentState = MineState.None;
+    public void OnTriggerExit2D(){
+        mine = false;
+    } 
 
-    void Start()
-    {
-        // Ensure the initial state is set
-        SetState(MineState.None);
-    }
-
-    void Update()
-    {
-        // Log the current state every frame
-        switch (currentState)
-        {
-            case MineState.None:
-                break;
-            case MineState.Mining:
-            if (currentTime >= 0f){
-                currentTime -= Time.deltaTime;
-            }
-            else if (Input.GetKey(KeyCode.Space) & currentTime < 0f){
-                Debug.Log("Mining");
-                if (mineSteel != null){
-                    mineSteel?.Invoke(); 
-                }
-                currentTime = mineCountdown;
-            }
-                break;
+    public void Update(){
+        if (mine && Input.GetKeyDown(KeyCode.Space)){
+            mineAmount++;
+            Debug.Log(mineAmount);
         }
-    }
 
-    // This function changes the state
-    private void SetState(MineState newState)
-    {
-        currentState = newState;
-    }
-
-    // When the player enters the trigger, change state to Mining
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            currentTime = mineCountdown;
-            SetState(MineState.Mining);
-        }
-    }
-
-    // When the player exits the trigger, change state to None
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            SetState(MineState.None);
+        if (mineAmount >= mineMax){
+            mineSteel?.Invoke();
+            mineAmount = 0;
         }
     }
 }
