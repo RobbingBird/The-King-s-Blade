@@ -5,7 +5,6 @@ using UnityEngine;
 public class PickupDrop : MonoBehaviour
 {
     public float pickupRadius = 1f;
-    public float forgeCheckRadius = 1.3f; // Radius to check for the Forge
 
     public delegate void onPickupAction();
     public delegate void onPlaceAction();
@@ -14,20 +13,22 @@ public class PickupDrop : MonoBehaviour
     public static event onPlaceAction onPlace;
     public static event onForgeAction onForge;
 
-
     private bool inventoryFull = false;
     private bool inventoryCheck = true;
+    private bool nearForge = false; // Tracks if the player is near the forge
 
     public LayerMask itemLayer;
-    public LayerMask forgeLayer;
-    
-    void OnEnable(){
+
+    void OnEnable()
+    {
         Forge.keep += keep2;
     }
 
-    void OnDisable(){
+    void OnDisable()
+    {
         Forge.keep -= keep2;
     }
+
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
@@ -37,82 +38,91 @@ public class PickupDrop : MonoBehaviour
     }
 
     void PickupItem()
-{
-    //Pickup
-    Collider2D[] colliders1 = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
-    foreach (Collider2D collider in colliders1)
     {
-        if (collider.CompareTag("Steel") && !inventoryFull)
+        // Pickup
+        Collider2D[] colliders1 = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
+        foreach (Collider2D collider in colliders1)
         {
-            Debug.Log("Picked up: " + collider.gameObject.name); 
-            collider.transform.SetParent(transform); 
-            collider.transform.position = transform.position + new Vector3(0, 1, 0);
-            collider.GetComponent<PolygonCollider2D>().enabled = false; 
-            inventoryFull = true; 
-            inventoryCheck = false; 
-            onPickup?.Invoke(); 
-            break;
-        }
-    }
-
-    //Forge
-    Collider2D[] colliders2 = Physics2D.OverlapCircleAll(transform.position, forgeCheckRadius, forgeLayer);
-        foreach (Collider2D collider in colliders2)
-        {
-            if (collider.CompareTag("Forge") && inventoryFull && inventoryCheck) 
+            if (collider.CompareTag("Steel") && !inventoryFull)
             {
-                Debug.Log("Near Forge: Destroying inventory items");
-                foreach (Transform child in transform)
+                collider.transform.SetParent(transform);
+                collider.transform.position = transform.position + new Vector3(0, 1, 0);
+                collider.GetComponent<PolygonCollider2D>().enabled = false;
+                inventoryFull = true;
+                inventoryCheck = false;
+                onPickup?.Invoke();
+                break;
+            }
+        }
+
+        // Forge
+        if (nearForge && inventoryFull && inventoryCheck)
+        {
+            foreach (Transform child in transform)
+            {
+                inventoryFull = false;
+                onForge?.Invoke(child.gameObject);
+                break;
+            }
+        }
+
+        // Place back in storage
+        Collider2D[] colliders3 = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
+        foreach (Collider2D collider in colliders3)
+        {
+            if (collider.CompareTag("Storage") && inventoryFull && inventoryCheck)
+            {
+                bool steelAtPosition = false;
+                Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(collider.transform.position, 0.1f, itemLayer);
+                foreach (Collider2D nearbyCollider in nearbyColliders)
                 {
-                    inventoryFull = false;
-                    onForge?.Invoke(child.gameObject);
+                    if (nearbyCollider.CompareTag("Steel") && nearbyCollider.transform.position == collider.transform.position)
+                    {
+                        steelAtPosition = true;
+                        break;
+                    }
                 }
-                break;
+
+                if (!steelAtPosition)
+                {
+                    Transform child = transform.GetChild(0);
+                    child.SetParent(collider.transform);
+                    child.position = collider.transform.position;
+                    child.GetComponent<PolygonCollider2D>().enabled = true;
+                    onPlace?.Invoke();
+                    inventoryFull = false;
+                    break;
+                }
             }
         }
 
-    //Place back in storage
-    Collider2D[] colliders3 = Physics2D.OverlapCircleAll(transform.position, pickupRadius, itemLayer);
-foreach (Collider2D collider in colliders3)
-{
-    if (collider.CompareTag("Storage") && inventoryFull && inventoryCheck)
+        inventoryCheck = true;
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
     {
-        bool steelAtPosition = false;
-        Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(collider.transform.position, 0.1f, itemLayer);
-        foreach (Collider2D nearbyCollider in nearbyColliders)
+        if (other.CompareTag("Forge"))
         {
-            if (nearbyCollider.CompareTag("Steel") && nearbyCollider.transform.position == collider.transform.position)
-            {
-                steelAtPosition = true;
-                break;
-            }
-        }
-
-        if (!steelAtPosition)
-        {
-            Transform child = transform.GetChild(0);
-            child.SetParent(collider.transform);
-            child.position = collider.transform.position;
-            child.GetComponent<PolygonCollider2D>().enabled = true;
-            onPlace?.Invoke();
-            inventoryFull = false;
-            break;
+            nearForge = true;
         }
     }
-}
 
-    inventoryCheck = true;
-}
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.CompareTag("Forge"))
+        {
+            nearForge = false;
+        }
+    }
+
+    void keep2()
+    {
+        inventoryFull = true;
+    }
 
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, pickupRadius);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, forgeCheckRadius);
-    }
-
-    void keep2(){
-        inventoryFull = true;
     }
 }
