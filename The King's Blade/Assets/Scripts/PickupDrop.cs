@@ -22,11 +22,11 @@ public class PickupDrop : MonoBehaviour
     public LayerMask forgeLayer;
     
     void OnEnable(){
-        Forge2.keep += keep2;
+        Forge.keep += keep2;
     }
 
     void OnDisable(){
-        Forge2.keep -= keep2;
+        Forge.keep -= keep2;
     }
     void Update()
     {

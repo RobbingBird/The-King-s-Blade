@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Forge2 : MonoBehaviour
+public class Forge : MonoBehaviour
 {
     public GameObject Card; 
     public GameObject steel; 
@@ -12,6 +12,7 @@ public class Forge2 : MonoBehaviour
     private int whatCard = 1; 
 
     private int worth = 0; 
+    public float forgeTime = 10f;
 
     public GameObject player;
 
@@ -45,7 +46,7 @@ public class Forge2 : MonoBehaviour
     }
 
     private void addSteel(GameObject Steel){
-        if (canAddSteel && steelAmount < 11 && whatCard == 1){ 
+        if (canAddSteel && steelAmount < 11 && whatCard == 1 && this.name == "Forge (2)"){ 
 
             Card.transform.GetChild(steelAmount).gameObject.SetActive(true);
             steelAmount += 1; 
@@ -81,7 +82,7 @@ public class Forge2 : MonoBehaviour
 
     private IEnumerator SteelAdditionCooldown() {
         canAddSteel = false; // Disable adding steel
-        yield return new WaitForSeconds(10); // Wait for 10 seconds
+        yield return new WaitForSeconds(forgeTime); // Wait for 10 seconds
         canAddSteel = true; // Re-enable adding steel
     }
 }
