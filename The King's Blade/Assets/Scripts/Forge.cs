@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class Forge : MonoBehaviour
 {
@@ -9,26 +10,31 @@ public class Forge : MonoBehaviour
     public GameObject storage;
     public GameObject storage1;
     public int steelAmount = 5; 
-    private bool hasOrcish = false; 
-    private bool hasDwarven = false; 
-    private bool hasElvish = false; 
-    private int whatCard = 1; 
+    public bool hasOrcish = false; 
+    public bool hasDwarven = false; 
+    public bool hasElvish = false; 
+    public int whatCard = 1; 
 
     public int worth = 0; 
     public int increaseForgeSpeed = 0; 
     public int increaseTrashSpeed = 0; 
     public int increaseMineSpeed = 0;
     public int increaseStorage = 0;
+    public int increaseRunSpeed = 0; 
 
     public bool doubleWorth = false;
     public bool completeBonus = false;
+    public bool activateStorage = false;
+    public bool activateStorage1 = false;
 
     public static float forgeTime = 20f; 
-    public static float cardsComplete = 0f;
+    public static int cardsComplete = 0;
+
+    public TextMeshProUGUI time;
 
     public GameObject player; 
 
-    public delegate void onCompleteAction(int points, int trash, int mine);
+    public delegate void onCompleteAction(int points, int trash, int mine, int store, int run);
     public delegate void onKeepAction();
     public static event onCompleteAction onComplete;
     public static event onKeepAction keep;
@@ -42,6 +48,10 @@ public class Forge : MonoBehaviour
 
     void OnDisable(){
         PickupDrop.onForge -= addSteel;
+    }
+
+    void Update(){
+        // time.text will be updated in the coroutine
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -148,10 +158,14 @@ public class Forge : MonoBehaviour
                 }
 
                 forgeTime -= increaseForgeSpeed;
-                onComplete?.Invoke(worth, increaseTrashSpeed, increaseMineSpeed);
+                onComplete?.Invoke(worth, increaseTrashSpeed, increaseMineSpeed, increaseStorage, increaseRunSpeed);
                 Card.transform.position = new Vector2(100, 100);
                 worth = 0;
-                Debug.Log(forgeTime);	
+                Debug.Log(forgeTime);
+                hasOrcish = false;
+                hasDwarven = false;
+                hasElvish = false;	
+                cardsComplete += 1;
             }
 
             StartCoroutine(SteelAdditionCooldown());
@@ -171,12 +185,12 @@ public class Forge : MonoBehaviour
                 }
 
                 if (this.name == "Forge (1)"){
-                    storage.SetActive(true);
+                    activateStorage = true;
                     increaseStorage += 1;
                 }
 
                 if (this.name == "Forge"){
-                    increaseMineSpeed += 3;
+                    increaseRunSpeed += 1;
                 }
             }
             else if (Steel.name == "dwarvenSteel(Clone)" && !hasDwarven)
@@ -189,12 +203,12 @@ public class Forge : MonoBehaviour
                 }
 
                 if (this.name == "Forge (1)"){
-                    storage1.SetActive(true);
+                    activateStorage1 = true;
                     increaseStorage += 1;
                 }
 
                 if (this.name == "Forge"){
-                    increaseMineSpeed += 7;
+                    increaseRunSpeed += 2;
                 }
             }
             else if (Steel.name == "elvishSteel(Clone)" && !hasElvish)
@@ -224,21 +238,35 @@ public class Forge : MonoBehaviour
                     if (doubleWorth){
                         doubleWorth = false;
                         worth *= 2;
-                    }
+                    } 
 
                     if (completeBonus){
                         worth += cardsComplete;
                     }
+
+                    if (activateStorage){
+                        storage.SetActive(true);
+                    }
+
+                    if (activateStorage1){
+                        storage.SetActive(true);
+                    }
+                } else if (this.name == "Forge"){
+                    worth += 3;
                 }
 
                 forgeTime -= increaseForgeSpeed;
-                onComplete?.Invoke(worth, increaseTrashSpeed, increaseMineSpeed);
+                onComplete?.Invoke(worth, increaseTrashSpeed, increaseMineSpeed, increaseStorage, increaseRunSpeed);
                 Card.transform.position = new Vector2(100, 100);
                 worth = 0;
-                Debug.Log(forgeTime);	
+                Debug.Log(forgeTime);
+                cardsComplete += 1;	
+                Invoke("death", 0.1f);
             }
 
-            StartCoroutine(SteelAdditionCooldown());
+            if (this.gameObject != null){
+                StartCoroutine(SteelAdditionCooldown());
+            }
         }
         else if (playerInTrigger)
         {
@@ -250,8 +278,25 @@ public class Forge : MonoBehaviour
     private IEnumerator SteelAdditionCooldown()
     {
         canAddSteel = false; // Disable adding steel
+        StartCoroutine(UpdateTimer()); // Start the timer update coroutine
         yield return new WaitForSeconds(forgeTime); // Wait for the specified time
         canAddSteel = true; // Re-enable adding steel
     }
-}
 
+    private IEnumerator UpdateTimer()
+    {
+        float remainingTime = forgeTime;
+        while (remainingTime > 0)
+        {
+            time.text = remainingTime.ToString("F2");
+            yield return null;
+            remainingTime -= Time.deltaTime;
+        }
+        time.text = " ";
+    }
+
+    private void death(){
+        Card1.SetActive(false);
+        Destroy(this);
+    }
+}

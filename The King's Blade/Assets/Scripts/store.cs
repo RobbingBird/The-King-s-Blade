@@ -14,7 +14,7 @@ public class Store : MonoBehaviour
     // Configuration variables
     private int steelAmount = 0; 
     public float steelDistance = 0;
-    public float steelMax = 4; 
+    public int steelMax = 4; 
     private int whatSteel = 0;
 
     // Cached transform component for optimization
@@ -25,6 +25,7 @@ public class Store : MonoBehaviour
         Mining.mineSteel += SpawnSteel; 
         PickupDrop.onPickup += RemoveSteel;
         PickupDrop.onPlace += addSteel;
+        Forge.onComplete += moreStorage;
     }
 
     private void OnDisable()
@@ -32,6 +33,7 @@ public class Store : MonoBehaviour
         Mining.mineSteel -= SpawnSteel;
         PickupDrop.onPickup -= RemoveSteel;
         PickupDrop.onPlace -= addSteel;
+        Forge.onComplete -= moreStorage;
     }
 
     private void Start()
@@ -84,6 +86,8 @@ public class Store : MonoBehaviour
                 }
             }
         } while (foundSteel);
+    } else if (steelAmount > steelMax){
+        steelAmount = steelMax;
     }
 }
 
@@ -94,5 +98,9 @@ public class Store : MonoBehaviour
 
     private void addSteel(){
         steelAmount ++;
+    }
+
+    private void moreStorage(int points, int trash, int mine, int store, int run){
+        steelMax += store;
     }
 }

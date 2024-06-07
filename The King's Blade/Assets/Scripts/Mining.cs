@@ -41,7 +41,7 @@ public class Mining : MonoBehaviour
         }
     }
 
-    public void increaseMineSpeed(int point, int trash, int mine){
+    public void increaseMineSpeed(int point, int trash, int mine, int store, int run){
         mineMax -= mine;
     }
 }

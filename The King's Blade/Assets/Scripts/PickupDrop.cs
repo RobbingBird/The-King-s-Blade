@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PickupDrop : MonoBehaviour
 {
     public float pickupRadius = 1f;
     public float trashTime = 10f; // Timer delay in seconds
+    public TextMeshProUGUI trashTimerText; // Text element for displaying trash timer
 
     public delegate void onPickupAction();
     public delegate void onPlaceAction();
@@ -89,7 +91,7 @@ public class PickupDrop : MonoBehaviour
                 Collider2D[] nearbyColliders = Physics2D.OverlapCircleAll(collider.transform.position, 0.1f, itemLayer);
                 foreach (Collider2D nearbyCollider in nearbyColliders)
                 {
-                    if (nearbyCollider.CompareTag("Steel") && nearbyCollider.transform.position == collider.transform.position)
+                    if (nearbyCollider.CompareTag("Steel") && nearbyCollider.transform.position - new Vector3 (0, 0.3f, 0) == collider.transform.position)
                     {
                         steelAtPosition = true;
                         break;
@@ -101,6 +103,7 @@ public class PickupDrop : MonoBehaviour
                     Transform child = transform.GetChild(0);
                     child.SetParent(collider.transform);
                     child.position = collider.transform.position;
+                    child.position += new Vector3(0, 0.3f, 0);
                     child.GetComponent<PolygonCollider2D>().enabled = true;
                     onPlace?.Invoke();
                     inventoryFull = false;
@@ -133,7 +136,8 @@ public class PickupDrop : MonoBehaviour
         inventoryFull = true;
     }
 
-    void trashSpeedChange(int points, int trash, int mine){
+    void trashSpeedChange(int points, int trash, int mine, int store, int run)
+    {
         trashTime -= trash;
     }
 
@@ -146,7 +150,20 @@ public class PickupDrop : MonoBehaviour
     IEnumerator ResetInventoryCheckAfterDelay()
     {
         canTrash = false;
+        StartCoroutine(UpdateTrashTimer());
         yield return new WaitForSeconds(trashTime);
         canTrash = true;
+    }
+
+    private IEnumerator UpdateTrashTimer()
+    {
+        float remainingTime = trashTime;
+        while (remainingTime > 0)
+        {
+            trashTimerText.text = remainingTime.ToString("F2");
+            yield return null;
+            remainingTime -= Time.deltaTime;
+        }
+        trashTimerText.text = " ";
     }
 }
