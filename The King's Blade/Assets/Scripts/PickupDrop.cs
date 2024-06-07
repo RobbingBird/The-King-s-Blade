@@ -133,7 +133,7 @@ public class PickupDrop : MonoBehaviour
         inventoryFull = true;
     }
 
-    void trashSpeedChange(int points, int trash){
+    void trashSpeedChange(int points, int trash, int mine){
         trashTime -= trash;
     }
 

@@ -13,6 +13,14 @@ public class Mining : MonoBehaviour
     public int mineAmount = 0;
     public int mineMax = 20;
 
+    public void OnEnable(){
+        Forge.onComplete += increaseMineSpeed;
+    }
+
+    public void OnDisable(){
+        Forge.onComplete -= increaseMineSpeed;
+    }
+
     public void OnTriggerEnter2D(){
         mine = true;
     }
@@ -31,5 +39,9 @@ public class Mining : MonoBehaviour
             mineSteel?.Invoke();
             mineAmount = 0;
         }
+    }
+
+    public void increaseMineSpeed(int point, int trash, int mine){
+        mineMax -= mine;
     }
 }
