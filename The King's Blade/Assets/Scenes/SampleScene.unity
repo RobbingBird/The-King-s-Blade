@@ -2302,6 +2302,7 @@ MonoBehaviour:
   increaseForgeSpeed: 0
   increaseTrashSpeed: 0
   increaseMineSpeed: 0
+  doubleWorth: 0
   player: {fileID: 619975970}
 --- !u!1001 &408605617
 PrefabInstance:
@@ -2793,6 +2794,7 @@ MonoBehaviour:
   increaseForgeSpeed: 0
   increaseTrashSpeed: 0
   increaseMineSpeed: 0
+  doubleWorth: 0
   player: {fileID: 619975970}
 --- !u!1 &519420028
 GameObject:
@@ -3119,6 +3121,7 @@ MonoBehaviour:
   increaseForgeSpeed: 0
   increaseTrashSpeed: 0
   increaseMineSpeed: 0
+  doubleWorth: 0
   player: {fileID: 619975970}
 --- !u!1 &584870177
 GameObject:
@@ -7645,7 +7648,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &1991306736
 SpriteRenderer:
   m_ObjectHideFlags: 0
